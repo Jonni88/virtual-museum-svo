@@ -482,6 +482,12 @@
             if (e.target === this) closeHero();
         });
 
+        // Экспорт функций для onclick
+        window.goToRoom = goToRoom;
+        window.showHero = showHero;
+        window.closeHero = closeHero;
+        window.startTour = startTour;
+
         // Запуск
         log('Скрипт загружен, ожидание DOM...');
         
