@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Виртуальный музей | Экспозиция</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+        #museum {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+        }
+        .wall {
+            width: 90%;
+            max-width: 1400px;
+            height: 85vh;
+            background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+            border: 3px solid #d4af37;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 50px rgba(212,175,55,0.2);
+        }
+        .wall-header {
+            background: linear-gradient(90deg, #1a1a1a, #2d2d2d, #1a1a1a);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #d4af37;
+        }
+        .wall-header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            color: #d4af37;
+            letter-spacing: 3px;
+        }
+        .wall-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 60px;
+            padding: 40px;
+            position: relative;
+        }
+        .exhibit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            transition: transform 0.3s;
+        }
+        .exhibit:hover {
+            transform: scale(1.02);
+        }
+        .photo-frame {
+            width: 300px;
+            height: 400px;
+            background: #1a1a1a;
+            border: 8px solid #d4af37;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .photo-frame .portrait {
+            width: 90%;
+            height: 70%;
+            background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6rem;
+            border: 2px solid rgba(212,175,55,0.3);
+        }
+        .photo-frame .name-plate {
+            width: 90%;
+            margin-top: 15px;
+            padding: 10px;
+            background: #0a0a0a;
+            border: 1px solid #d4af37;
+            text-align: center;
+        }
+        .photo-frame .name-plate h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            color: #d4af37;
+            margin-bottom: 5px;
+        }
+        .photo-frame .name-plate p {
+            color: #8b0000;
+            font-size: 0.9rem;
+        }
+        .info-plaque {
+            width: 350px;
+            background: linear-gradient(135deg, #2d2d2d, #1a1a1a);
+            border: 3px solid rgba(212,175,55,0.5);
+            border-radius: 5px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        .info-plaque h4 {
+            color: #d4af37;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(212,175,55,0.3);
+            padding-bottom: 5px;
+        }
+        .info-plaque p {
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .awards-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        .award-badge {
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: #000;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+            background: rgba(0,0,0,0.9);
+            padding: 15px 30px;
+            border-radius: 50px;
+            border: 2px solid #d4af37;
+        }
+        .nav-btn {
+            padding: 12px 25px;
+            background: transparent;
+            border: 2px solid rgba(212,175,55,0.5);
+            color: #d4af37;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .nav-btn:hover, .nav-btn.active {
+            background: #d4af37;
+            color: #000;
+        }
+        .room-number {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.9);
+            padding: 15px 25px;
+            border-radius: 10px;
+            border: 2px solid #d4af37;
+        }
+        .room-number span {
+            color: #d4af37;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .arrow-nav {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(139,0,0,0.9);
+            border: 2px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        .arrow-nav:hover {
+            background: #d4af37;
+            color: #000;
+        }
+        .arrow-nav.left { left: 20px; }
+        .arrow-nav.right { right: 20px; }
+        @media (max-width: 1200px) {
+            .wall-content {
+                flex-direction: column;
+                gap: 30px;
+                overflow-y: auto;
+            }
+            .photo-frame {
+                width: 250px;
+                height: 330px;
+            }
+            .info-plaque {
+                width: 100%;
+                max-width: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="room-number">
+        <span id="roomLabel">Зал 1 из 5</span>
+    </div>
+
+    <div id="museum">
+        <div class="wall">
+            <div class="wall-header">
+                <h1 id="hallName">Зал Славы</h1>
+            </div>
+            
+            <div class="wall-content" id="exhibitContainer">
+                <!-- Контент будет загружен JS -->
+            </div>
+        </div>
+    </div>
+
+    <div class="arrow-nav left" onclick="prevHall()">←</div>
+    <div class="arrow-nav right" onclick="nextHall()">→</div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="goToHall(0)">🚪 Вход</button>
+        <button class="nav-btn" onclick="goToHall(1)">⭐ Зал 1</button>
+        <button class="nav-btn" onclick="goToHall(2)">⭐ Зал 2</button>
+        <button class="nav-btn" onclick="goToHall(3)">⭐ Зал 3</button>
+        <button class="nav-btn" onclick="goToHall(4)">🕯️ Мемориал</button>
+    </div>
+
+    <script>
+        const exhibits = [
+            {
+                hallName: "Входной зал",
+                heroName: "Добро пожаловать",
+                dates: "",
+                rank: "",
+                deed: "Виртуальный музей памяти героев СВО Олёкминского района. Здесь представлены наши земляки, отдавшие жизни за Родину.",
+                awards: []
+            },
+            {
+                hallName: "Зал Славы",
+                heroName: "Петров Алексей Иванович",
+                dates: "1985 — 2024",
+                rank: "Майор, командир батальона",
+                deed: "При выполнении боевой задачи в зоне СВО проявил исключительное мужество. Организовал оборону населённого пункта, лично повёл бойцов в контратаку. Ценой собственной жизни спас десятки мирных жителей и военнослужащих.",
+                awards: ["Герой России", "Орден Мужества", "Медаль «За отвагу»"]
+            },
+            {
+                hallName: "Галерея Героев",
+                heroName: "Иванов Сергей Петрович",
+                dates: "1992 — 2023",
+                rank: "Старший лейтенант",
+                deed: "При выполнении боевой задачи прикрывал отход раненых товарищей. Погиб, приняв неравный бой с превосходящими силами противника.",
+                awards: ["Орден Мужества", "Медаль «За отвагу»"]
+            },
+            {
+                hallName: "Книга Памяти",
+                heroName: "Сидоров Дмитрий Алексеевич",
+                dates: "1988 — 2024",
+                rank: "Сержант, старший разведчик",
+                deed: "В составе разведывательной группы выполнял задание по выявлению позиций противника. Погиб при прикрытии выхода группы.",
+                awards: ["Орден Красной Звезды", "Медаль «За отвагу»"]
+            },
+            {
+                hallName: "Мемориальный зал",
+                heroName: "Вечная память",
+                dates: "",
+                rank: "",
+                deed: "В этом зале увековечена память всех павших героев Олёкминского района. Мы помним каждого, кто отдал свою жизнь за Родину.",
+                awards: []
+            }
+        ];
+
+        let currentHall = 0;
+
+        function renderHall(index) {
+            const exhibit = exhibits[index];
+            const container = document.getElementById('exhibitContainer');
+            
+            document.getElementById('hallName').textContent = exhibit.hallName;
+            document.getElementById('roomLabel').textContent = `Зал ${index + 1} из ${exhibits.length}`;
+            
+            // Формируем HTML
+            let awardsHtml = exhibit.awards.length > 0 
+                ? `<div class="awards-list">${exhibit.awards.map(a => `<span class="award-badge">${a}</span>`).join('')}</div>`
+                : '';
+            
+            container.innerHTML = `
+                <div class="exhibit">
+                    <div class="photo-frame">
+                        <div class="portrait">👤</div>
+                        <div class="name-plate">
+                            <h3>${exhibit.heroName}</h3>
+                            ${exhibit.dates ? `<p>${exhibit.dates}</p>` : ''}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-plaque">
+                    ${exhibit.rank ? `<div>
+                        <h4>Воинское звание</h4>
+                        <p>${exhibit.rank}</p>
+                    </div>` : ''}
+                    
+                    <div>
+                        <h4>Биография и подвиг</h4>
+                        <p>${exhibit.deed}</p>
+                    </div>
+                    
+                    ${awardsHtml}
+                </div>
+            `;
+            
+            // Обновляем кнопки
+            document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+        }
+
+        function goToHall(index) {
+            if (index >= 0 && index < exhibits.length) {
+                currentHall = index;
+                renderHall(index);
+            }
+        }
+
+        function nextHall() {
+            if (currentHall < exhibits.length - 1) {
+                goToHall(currentHall + 1);
+            }
+        }
+
+        function prevHall() {
+            if (currentHall > 0) {
+                goToHall(currentHall - 1);
+            }
+        }
+
+        // Клавиатурная навигация
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight') nextHall();
+            if (e.key === 'ArrowLeft') prevHall();
+        });
+
+        // Экспорт
+        window.goToHall = goToHall;
+        window.nextHall = nextHall;
+        window.prevHall = prevHall;
+
+        // Инициализация
+        renderHall(0);
+    </script>
+</body>
+</html>
