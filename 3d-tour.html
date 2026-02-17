@@ -119,42 +119,77 @@
         let previousMousePosition = { x: 0, y: 0 };
         let targetRotation = { x: 0, y: 0 };
 
-        // Создаем текстуру через Canvas (не требует внешних изображений)
-        function createRoomTexture(roomName, color1, color2) {
+        // Создаем текстуру с фото героя
+        function createRoomTexture(roomName, heroName, heroDates) {
             const canvas = document.createElement('canvas');
             canvas.width = 2048;
             canvas.height = 1024;
             const ctx = canvas.getContext('2d');
 
-            // Градиентный фон
+            // Фон - темный градиент
             const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, color1);
-            gradient.addColorStop(0.5, color2);
-            gradient.addColorStop(1, color1);
+            gradient.addColorStop(0, '#1a1a2e');
+            gradient.addColorStop(0.5, '#0f0f23');
+            gradient.addColorStop(1, '#1a1a2e');
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Декоративные линии
+            // Рамка золотая
+            ctx.strokeStyle = 'rgba(212, 175, 55, 0.5)';
+            ctx.lineWidth = 20;
+            ctx.strokeRect(50, 50, canvas.width - 100, canvas.height - 100);
+
+            // Место для фото (слева)
+            const photoX = 200;
+            const photoY = 200;
+            const photoSize = 400;
+            
+            // Рамка фото
+            ctx.fillStyle = '#2a2a2a';
+            ctx.fillRect(photoX, photoY, photoSize, photoSize * 1.3);
+            ctx.strokeStyle = '#d4af37';
+            ctx.lineWidth = 8;
+            ctx.strokeRect(photoX, photoY, photoSize, photoSize * 1.3);
+            
+            // Силуэт человека
+            ctx.fillStyle = '#3a3a3a';
+            // Голова
+            ctx.beginPath();
+            ctx.arc(photoX + photoSize/2, photoY + 120, 80, 0, Math.PI * 2);
+            ctx.fill();
+            // Тело
+            ctx.beginPath();
+            ctx.ellipse(photoX + photoSize/2, photoY + 350, 100, 150, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Эмодзи поверх
+            ctx.font = '120px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('👤', photoX + photoSize/2, photoY + 160);
+
+            // Информация справа
+            ctx.fillStyle = '#d4af37';
+            ctx.font = 'bold 80px "Cormorant Garamond", serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(heroName, photoX + photoSize + 100, 300);
+
+            ctx.fillStyle = '#8b0000';
+            ctx.font = '50px Arial';
+            ctx.fillText(heroDates, photoX + photoSize + 100, 380);
+
+            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.font = '40px Arial';
+            ctx.fillText(roomName, photoX + photoSize + 100, 480);
+
+            // Декоративные элементы
             ctx.strokeStyle = 'rgba(212, 175, 55, 0.3)';
-            ctx.lineWidth = 3;
-            for (let i = 0; i < 10; i++) {
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 5; i++) {
                 ctx.beginPath();
-                ctx.moveTo(0, i * 100);
-                ctx.lineTo(canvas.width, i * 100);
+                ctx.moveTo(0, 200 + i * 150);
+                ctx.lineTo(canvas.width, 200 + i * 150);
                 ctx.stroke();
             }
-
-            // Название зала
-            ctx.fillStyle = '#d4af37';
-            ctx.font = 'bold 120px "Cormorant Garamond", serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(roomName, canvas.width/2, canvas.height/2 - 100);
-
-            // Дополнительный текст
-            ctx.font = '40px Arial';
-            ctx.fillStyle = 'rgba(255,255,255,0.6)';
-            ctx.fillText('Виртуальный музей памяти', canvas.width/2, canvas.height/2 + 50);
 
             return new THREE.CanvasTexture(canvas);
         }
@@ -204,10 +239,10 @@
         }
 
         const rooms = [
-            { name: "Входной зал", color1: "#1a1a2e", color2: "#0f0f23" },
-            { name: "Зал Славы", color1: "#2d1810", color2: "#1a0f0a" },
-            { name: "Галерея Героев", color1: "#1a2d1a", color2: "#0f1a0f" },
-            { name: "Мемориал", color1: "#2d1010", color2: "#1a0a0a" }
+            { name: "Входной зал", heroName: "Добро пожаловать", heroDates: "", type: "entrance" },
+            { name: "Зал Славы", heroName: "Петров Алексей И.", heroDates: "1985 — 2024", type: "hero" },
+            { name: "Галерея Героев", heroName: "Иванов Сергей П.", heroDates: "1992 — 2023", type: "hero" },
+            { name: "Мемориал", heroName: "Вечная память", heroDates: "", type: "memorial" }
         ];
 
         function loadRoom(index) {
@@ -223,8 +258,8 @@
                 sphere.material.dispose();
             }
 
-            // Создаем текстуру
-            const texture = createRoomTexture(room.name, room.color1, room.color2);
+            // Создаем текстуру с информацией о герое
+            const texture = createRoomTexture(room.name, room.heroName, room.heroDates);
 
             // Создаем сферу
             const geometry = new THREE.SphereGeometry(500, 60, 40);
