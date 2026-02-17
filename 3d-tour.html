@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Виртуальный музей | 3D Тур</title>
+    <script src="https://www.marzipano.net/build/marzipano.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --gold: #d4af37;
+            --dark: #0a0a0a;
+            --red: #8b0000;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: var(--dark);
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+        
+        /* Шапка */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.9);
+            padding: 15px 20px;
+            z-index: 1000;
+            border-bottom: 2px solid var(--gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .room-indicator {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .room-indicator span {
+            color: var(--gold);
+            font-weight: 600;
+        }
+        
+        /* Основной контейнер панорамы */
+        #pano {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Навигация по комнатам */
+        .room-nav {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+            background: rgba(0,0,0,0.8);
+            padding: 15px 25px;
+            border-radius: 50px;
+            border: 1px solid var(--gold);
+        }
+        
+        .room-btn {
+            padding: 12px 24px;
+            background: transparent;
+            border: 2px solid rgba(212,175,55,0.3);
+            color: var(--gold);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+        
+        .room-btn:hover, .room-btn.active {
+            background: var(--gold);
+            color: #000;
+        }
+        
+        /* Инструкция */
+        .instructions {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.95);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 2000;
+            max-width: 500px;
+            border: 2px solid var(--gold);
+        }
+        
+        .instructions h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+        
+        .instructions p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #ccc;
+        }
+        
+        .instructions button {
+            background: var(--gold);
+            color: #000;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+        
+        .instructions.hidden {
+            display: none;
+        }
+        
+        /* Модальное окно для фото на стене */
+        .photo-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 3000;
+            padding: 40px;
+            overflow-y: auto;
+        }
+        
+        .photo-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .photo-modal-content {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 40px;
+            max-width: 1000px;
+            width: 100%;
+            background: rgba(20,20,20,0.95);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid var(--gold);
+        }
+        
+        .photo-modal-img {
+            width: 100%;
+            border-radius: 10px;
+            border: 4px solid var(--gold);
+        }
+        
+        .photo-modal-info h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+        
+        .photo-modal-info .dates {
+            color: var(--red);
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+        }
+        
+        .photo-modal-info .info-block {
+            background: rgba(212,175,55,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--gold);
+        }
+        
+        .photo-modal-info .info-block h3 {
+            color: var(--gold);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2.5rem;
+            color: var(--gold);
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        /* Стиль для хотспотов */
+        .hotspot {
+            width: 60px;
+            height: 60px;
+            background: rgba(212,175,55,0.9);
+            border: 3px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 0 20px rgba(212,175,55,0.5);
+            transition: all 0.3s;
+            animation: pulse 2s infinite;
+        }
+        
+        .hotspot:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 40px rgba(212,175,55,0.8);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .hotspot-label {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            border: 1px solid var(--gold);
+        }
+        
+        /* Стрелки навигации */
+        .nav-arrow {
+            width: 80px;
+            height: 80px;
+            background: rgba(139,0,0,0.9);
+            border: 3px solid var(--gold);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .nav-arrow:hover {
+            background: var(--gold);
+            color: #000;
+            transform: scale(1.1);
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 900px) {
+            .photo-modal-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .photo-modal-img {
+                max-width: 300px;
+                margin: 0 auto;
+            }
+            
+            .room-nav {
+                flex-wrap: wrap;
+                padding: 10px 15px;
+            }
+            
+            .room-btn {
+                padding: 10px 18px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <h1>🏛️ Виртуальный музей</h1>
+        <div class="room-indicator">
+            Зал: <span id="currentRoomName">Главный зал</span>
+        </div>
+    </header>
+    
+    <!-- Панорама -->
+    <div id="pano"></div>
+    
+    <!-- Навигация по залам -->
+    <nav class="room-nav">
+        <button class="room-btn active" onclick="switchRoom(0)">🚪 Вход</button>
+        <button class="room-btn" onclick="switchRoom(1)">⭐ Зал Славы</button>
+        <button class="room-btn" onclick="switchRoom(2)">📖 Книга Памяти</button>
+        <button class="room-btn" onclick="switchRoom(3)">🎖️ Награды</button>
+        <button class="room-btn" onclick="switchRoom(4)">🕯️ Мемориал</button>
+    </nav>
+    
+    <!-- Инструкция -->
+    <div class="instructions" id="instructions">
+        <h2>🏛️ Добро пожаловать в виртуальный музей</h2>
+        <p>🖱️ <strong>Мышь:</strong> тяните для осмотра вокруг</p>
+        <p>📱 <strong>Тачскрин:</strong> двигайте пальцем для поворота</p>
+        <p>👆 <strong>Кликайте</strong> по золотым кругам — это фото героев на стенах</p>
+        <p>🚪 <strong>Переходите</strong> между залами кнопками внизу</p>
+        
+        <button onclick="startTour()">Начать виртуальный тур</button>
+    </div>
+    
+    <!-- Модальное окно для информации о герое -->
+    <div class="photo-modal" id="photoModal">
+        <button class="close-modal" onclick="closePhotoModal()">&times;</button>
+        <div class="photo-modal-content">
+            <img src="" alt="Фото героя" class="photo-modal-img" id="modalImg">
+            
+            <div class="photo-modal-info">
+                <h2 id="modalName">Имя героя</h2>
+                <div class="dates" id="modalDates">1990 — 2024</div>
+                
+                <div class="info-block">
+                    <h3>Воинское звание</h3>
+                    <p id="modalRank">Звание</p>
+                </div>
+                
+                <div class="info-block">
+                    <h3>Подвиг</h3>
+                    <p id="modalDeed">Описание подвига</p>
+                </div>
+                
+                <div class="info-block">
+                    <h3>Награды</h3>
+                    <p id="modalAwards">Награды</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Данные о героях
+        const heroes = [
+            {
+                id: 1,
+                name: "Петров Алексей Иванович",
+                dates: "1985 — 2024",
+                rank: "Майор, командир батальона",
+                deed: "Организовал оборону населённого пункта, лично повёл бойцов в контратаку. Ценой жизни спас десятки мирных жителей.",
+                awards: "Герой России, Орден Мужества, Медаль «За отвагу»",
+                photo: "https://via.placeholder.com/400x500/2a2a2a/d4af37?text=👤"
+            },
+            {
+                id: 2,
+                name: "Иванов Сергей Петрович",
+                dates: "1992 — 2023",
+                rank: "Старший лейтенант",
+                deed: "Прикрывал отход раненых товарищей. Погиб, приняв неравный бой с превосходящими силами противника.",
+                awards: "Орден Мужества, Медаль «За отвагу»",
+                photo: "https://via.placeholder.com/400x500/2a2a2a/d4af37?text=👤"
+            },
+            {
+                id: 3,
+                name: "Сидоров Дмитрий Алексеевич",
+                dates: "1988 — 2024",
+                rank: "Сержант, старший разведчик",
+                deed: "Выполнял задание по выявлению позиций противника. Погиб при прикрытии выхода группы.",
+                awards: "Орден Красной Звезды, Медаль «За отвагу»",
+                photo: "https://via.placeholder.com/400x500/2a2a2a/d4af37?text=👤"
+            },
+            {
+                id: 4,
+                name: "Константинов Михаил Васильевич",
+                dates: "1990 — 2024",
+                rank: "Ефрейтор, наводчик БМП",
+                deed: "БМП была подбита, экипаж вывел раненых под огнём, прикрывая отход товарищей.",
+                awards: "Медаль «За отвагу», Медаль «За боевые заслуги»",
+                photo: "https://via.placeholder.com/400x500/2a2a2a/d4af37?text=👤"
+            },
+            {
+                id: 5,
+                name: "Федоров Артём Юрьевич",
+                dates: "1995 — 2023",
+                rank: "Рядовой, стрелок",
+                deed: "При отражении контратаки подавил два пулемёта и уничтожил БМП противника.",
+                awards: "Орден Мужества",
+                photo: "https://via.placeholder.com/400x500/2a2a2a/d4af37?text=👤"
+            }
+        ];
+        
+        // Конфигурация залов музея
+        const rooms = [
+            {
+                name: "Входной зал",
+                // Панорама входа (можно заменить на свою)
+                panorama: "https://www.marzipano.net/demos/common/placeholder-0.jpg",
+                hotspots: [
+                    { yaw: 0, pitch: 0, heroId: null, type: "info", text: "Добро пожаловать в музей памяти героев СВО Олёкминского района" }
+                ],
+                navigation: [
+                    { yaw: Math.PI/2, pitch: 0, targetRoom: 1, text: "В зал Славы →" }
+                ]
+            },
+            {
+                name: "Зал Славы",
+                panorama: "https://www.marzipano.net/demos/common/placeholder-1.jpg",
+                hotspots: [
+                    { yaw: -0.5, pitch: 0.1, heroId: 0, text: "Петров А.И." },
+                    { yaw: 0, pitch: 0.1, heroId: 1, text: "Иванов С.П." },
+                    { yaw: 0.5, pitch: 0.1, heroId: 2, text: "Сидоров Д.А." }
+                ],
+                navigation: [
+                    { yaw: -Math.PI/2, pitch: 0, targetRoom: 0, text: "← Назад" },
+                    { yaw: Math.PI/2, pitch: 0, targetRoom: 2, text: "Вперёд →" }
+                ]
+            },
+            {
+                name: "Книга Памяти",
+                panorama: "https://www.marzipano.net/demos/common/placeholder-2.jpg",
+                hotspots: [
+                    { yaw: -0.3, pitch: 0.1, heroId: 3, text: "Константинов М.В." },
+                    { yaw: 0.3, pitch: 0.1, heroId: 4, text: "Федоров А.Ю." }
+                ],
+                navigation: [
+                    { yaw: -Math.PI/2, pitch: 0, targetRoom: 1, text: "← Назад" },
+                    { yaw: Math.PI/2, pitch: 0, targetRoom: 3, text: "Вперёд →" }
+                ]
+            },
+            {
+                name: "Зал наград",
+                panorama: "https://www.marzipano.net/demos/common/placeholder-3.jpg",
+                hotspots: [
+                    { yaw: 0, pitch: 0, heroId: null, type: "info", text: "Здесь представлены награды наших героев" }
+                ],
+                navigation: [
+                    { yaw: -Math.PI/2, pitch: 0, targetRoom: 2, text: "← Назад" },
+                    { yaw: Math.PI/2, pitch: 0, targetRoom: 4, text: "В мемориал →" }
+                ]
+            },
+            {
+                name: "Мемориальный зал",
+                panorama: "https://www.marzipano.net/demos/common/placeholder-4.jpg",
+                hotspots: [
+                    { yaw: 0, pitch: 0, heroId: null, type: "eternal", text: "🔥 Вечная память" }
+                ],
+                navigation: [
+                    { yaw: -Math.PI/2, pitch: 0, targetRoom: 3, text: "← Назад к наградам" }
+                ]
+            }
+        ];
+        
+        let currentRoom = 0;
+        let viewer;
+        let scenes = [];
+        
+        // Инициализация
+        function init() {
+            const panoElement = document.getElementById('pano');
+            viewer = new Marzipano.Viewer(panoElement);
+            
+            // Создаем сцены для всех залов
+            rooms.forEach((room, index) => {
+                const source = Marzipano.ImageUrlSource.fromString(room.panorama);
+                const geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
+                const view = new Marzipano.RectilinearView({
+                    yaw: 0,
+                    pitch: 0,
+                    roll: 0,
+                    fov: Math.PI / 2
+                });
+                
+                const scene = viewer.createScene({
+                    source: source,
+                    geometry: geometry,
+                    view: view,
+                    pinFirstLevel: true
+                });
+                
+                // Добавляем хотспоты
+                const hotspotContainer = scene.hotspotContainer();
+                
+                // Хотспоты с фото героев
+                room.hotspots.forEach(h => {
+                    if (h.heroId !== null) {
+                        const el = document.createElement('div');
+                        el.className = 'hotspot';
+                        el.innerHTML = `
+                            👤
+                            <div class="hotspot-label">${h.text}</div>
+                        `;
+                        el.onclick = () => showHeroInfo(h.heroId);
+                        
+                        hotspotContainer.createHotspot(el, { 
+                            yaw: h.yaw, 
+                            pitch: h.pitch 
+                        });
+                    } else if (h.type === 'info') {
+                        const el = document.createElement('div');
+                        el.className = 'hotspot';
+                        el.style.background = 'rgba(100,100,100,0.9)';
+                        el.innerHTML = `
+                            ℹ️
+                            <div class="hotspot-label">${h.text}</div>
+                        `;
+                        el.onclick = () => alert(h.text);
+                        
+                        hotspotContainer.createHotspot(el, { 
+                            yaw: h.yaw, 
+                            pitch: h.pitch 
+                        });
+                    } else if (h.type === 'eternal') {
+                        const el = document.createElement('div');
+                        el.className = 'hotspot';
+                        el.style.background = 'rgba(139,0,0,0.9)';
+                        el.style.animation = 'pulse 1s infinite';
+                        el.innerHTML = `
+                            🔥
+                            <div class="hotspot-label">${h.text}</div>
+                        `;
+                        
+                        hotspotContainer.createHotspot(el, { 
+                            yaw: h.yaw, 
+                            pitch: h.pitch 
+                        });
+                    }
+                });
+                
+                // Хотспоты навигации
+                room.navigation.forEach(nav => {
+                    const el = document.createElement('div');
+                    el.className = 'nav-arrow';
+                    el.innerHTML = '➤';
+                    el.style.transform = nav.text.includes('←') ? 'rotate(180deg)' : '';
+                    el.onclick = () => switchRoom(nav.targetRoom);
+                    
+                    // Лейбл для навигации
+                    const label = document.createElement('div');
+                    label.className = 'hotspot-label';
+                    label.textContent = nav.text;
+                    label.style.bottom = '-50px';
+                    el.appendChild(label);
+                    
+                    hotspotContainer.createHotspot(el, { 
+                        yaw: nav.yaw, 
+                        pitch: nav.pitch 
+                    });
+                });
+                
+                scenes.push(scene);
+            });
+            
+            // Показываем первый зал
+            switchRoom(0);
+        }
+        
+        // Переключение зала
+        function switchRoom(index) {
+            currentRoom = index;
+            scenes[index].switchTo();
+            
+            // Обновляем индикатор
+            document.getElementById('currentRoomName').textContent = rooms[index].name;
+            
+            // Обновляем активную кнопку
+            document.querySelectorAll('.room-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+        }
+        
+        // Показать информацию о герое
+        function showHeroInfo(heroId) {
+            const hero = heroes[heroId];
+            if (!hero) return;
+            
+            document.getElementById('modalImg').src = hero.photo;
+            document.getElementById('modalName').textContent = hero.name;
+            document.getElementById('modalDates').textContent = hero.dates;
+            document.getElementById('modalRank').textContent = hero.rank;
+            document.getElementById('modalDeed').textContent = hero.deed;
+            document.getElementById('modalAwards').textContent = hero.awards;
+            
+            document.getElementById('photoModal').classList.add('active');
+        }
+        
+        // Закрыть модальное окно
+        function closePhotoModal() {
+            document.getElementById('photoModal').classList.remove('active');
+        }
+        
+        // Начать тур
+        function startTour() {
+            document.getElementById('instructions').classList.add('hidden');
+        }
+        
+        // Закрытие модалки при клике вне
+        document.getElementById('photoModal').addEventListener('click', function(e) {
+            if (e.target === this) closePhotoModal();
+        });
+        
+        // Инициализация при загрузке
+        window.onload = init;
+    </script>
+</body>
+</html>
