@@ -9,74 +9,44 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Open Sans', sans-serif;
-            background: #0a0a0a;
-            color: #e0e0e0;
-            overflow: hidden;
-        }
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0,0,0,0.95);
-            padding: 15px 20px;
-            z-index: 1000;
-            border-bottom: 2px solid #d4af37;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .header h1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.5rem;
-            color: #d4af37;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-        #pano {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
         }
         #loading {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            z-index: 100;
-            background: rgba(0,0,0,0.9);
-            padding: 40px;
-            border-radius: 20px;
-            border: 2px solid #d4af37;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(10,10,10,0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
         }
         .spinner {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             border: 4px solid rgba(212,175,55,0.3);
             border-top-color: #d4af37;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            margin-bottom: 20px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        #loading.error {
-            border-color: #ff4444;
-        }
-        #loading.error .spinner {
-            display: none;
-        }
-        #errorDetails {
+        #loading.error { background: rgba(50,0,0,0.95); }
+        #loading.error .spinner { display: none; }
+        #errorText {
             color: #ff6b6b;
-            margin-top: 15px;
-            font-size: 0.9rem;
-            max-width: 400px;
-            text-align: left;
+            max-width: 500px;
+            text-align: center;
+            padding: 20px;
+            white-space: pre-line;
         }
-        .room-nav {
+        #pano {
+            width: 100%;
+            height: 100vh;
+        }
+        .controls {
             position: fixed;
             bottom: 20px;
             left: 50%;
@@ -85,417 +55,270 @@
             gap: 10px;
             z-index: 1000;
             background: rgba(0,0,0,0.9);
-            padding: 12px 20px;
+            padding: 15px;
             border-radius: 50px;
             border: 1px solid #d4af37;
-            flex-wrap: wrap;
-            justify-content: center;
         }
-        .room-btn {
-            padding: 10px 18px;
+        .btn {
+            padding: 12px 24px;
             background: transparent;
-            border: 2px solid rgba(212,175,55,0.3);
+            border: 2px solid rgba(212,175,55,0.5);
             color: #d4af37;
             border-radius: 25px;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             transition: all 0.3s;
         }
-        .room-btn:hover, .room-btn.active {
+        .btn:hover, .btn.active {
             background: #d4af37;
             color: #000;
         }
-        .instructions {
+        .info-panel {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.95);
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            z-index: 2000;
-            max-width: 450px;
-            border: 2px solid #d4af37;
-        }
-        .instructions h2 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.8rem;
-            color: #d4af37;
-            margin-bottom: 20px;
-        }
-        .instructions button {
-            background: #d4af37;
-            color: #000;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 30px;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-top: 20px;
-            font-weight: 600;
-        }
-        .instructions.hidden { display: none; }
-        .hero-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.95);
-            z-index: 3000;
-            padding: 20px;
-            overflow-y: auto;
-            align-items: center;
-            justify-content: center;
-        }
-        .hero-modal.active { display: flex; }
-        .hero-modal-content {
-            background: #1a1a1a;
-            border-radius: 20px;
-            max-width: 500px;
-            width: 100%;
-            border: 2px solid #d4af37;
-            overflow: hidden;
-        }
-        .hero-modal-img {
-            width: 100%;
-            height: 250px;
-            background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 5rem;
-        }
-        .hero-modal-info { padding: 30px; }
-        .hero-modal-info h2 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.8rem;
-            color: #d4af37;
-        }
-        .hero-modal-info .dates {
-            color: #8b0000;
-            font-size: 1.2rem;
-            margin: 10px 0 20px;
-        }
-        .close-btn {
-            position: absolute;
             top: 20px;
             right: 20px;
-            width: 50px;
-            height: 50px;
-            background: #1a1a1a;
-            border: 2px solid #d4af37;
-            border-radius: 50%;
+            background: rgba(0,0,0,0.9);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #d4af37;
+            max-width: 300px;
+            z-index: 1000;
+        }
+        .info-panel h2 {
+            font-family: 'Cormorant Garamond', serif;
             color: #d4af37;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-        .hotspot {
-            width: 50px;
-            height: 50px;
-            background: rgba(212,175,55,0.95);
-            border: 3px solid white;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            box-shadow: 0 0 25px rgba(212,175,55,0.6);
-        }
-        .nav-arrow {
-            width: 60px;
-            height: 60px;
-            background: rgba(139,0,0,0.9);
-            border: 3px solid #d4af37;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            color: white;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <h1>🏛️ Виртуальный музей</h1>
-        <div style="color: #888; font-size: 0.9rem;">
-            Зал: <span id="roomName" style="color: #d4af37;">Загрузка...</span>
-        </div>
-    </header>
-
-    <div id="pano">
-        <div id="loading">
-            <div class="spinner"></div>
-            <p id="loadingText">Загрузка 3D тура...</p>
-            <pre id="errorDetails"></pre>
-        </div>
+    <div id="loading">
+        <div class="spinner"></div>
+        <p>Загрузка виртуального музея...</p>
+        <p id="status">Подключение к 3D движку</p>
+        <pre id="errorText"></pre>
     </div>
 
-    <nav class="room-nav">
-        <button class="room-btn" onclick="goToRoom(0)">🚪 Вход</button>
-        <button class="room-btn" onclick="goToRoom(1)">⭐ Зал 1</button>
-        <button class="room-btn" onclick="goToRoom(2)">⭐ Зал 2</button>
-        <button class="room-btn" onclick="goToRoom(3)">📖 Зал 3</button>
-        <button class="room-btn" onclick="goToRoom(4)">🕯️ Мемориал</button>
-    </nav>
+    <div id="pano"></div>
 
-    <div class="instructions hidden" id="instructions">
+    <div class="controls">
+        <button class="btn" onclick="changeRoom(0)">🚪 Вход</button>
+        <button class="btn" onclick="changeRoom(1)">⭐ Зал 1</button>
+        <button class="btn" onclick="changeRoom(2)">⭐ Зал 2</button>
+        <button class="btn" onclick="changeRoom(3)">📖 Зал 3</button>
+    </div>
+
+    <div class="info-panel">
         <h2>🏛️ Виртуальный музей</h2>
         <p>🖱️ Тяните мышью для осмотра</p>
-        <p>👆 Кликайте на 👤 — информация о герое</p>
-        <p>➤ Стрелки для перехода между залами</p>
-        <button onclick="startTour()">Начать тур</button>
+        <p>👆 Кликайте на иконки героев</p>
+        <p id="roomInfo">Текущий зал: <span id="roomName">-</span></p>
     </div>
 
-    <div class="hero-modal" id="heroModal">
-        <button class="close-btn" onclick="closeHero()">&times;</button>
-        <div class="hero-modal-content">
-            <div class="hero-modal-img">👤</div>
-            <div class="hero-modal-info">
-                <h2 id="hName"></h2>
-                <div class="dates" id="hDates"></div>
-                <p><strong style="color:#d4af37;">Звание:</strong> <span id="hRank"></span></p>
-                <p style="margin-top:15px;"><strong style="color:#d4af37;">Подвиг:</strong></p>
-                <p id="hDeed"></p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Marzipano -->
-    <script src="https://www.marzipano.net/build/marzipano.js"></script>
-
+    <!-- Three.js для WebGL -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
     <script>
-        // Логирование
-        function log(msg) {
-            console.log('[3D Tour]', msg);
-        }
-
-        function showError(msg, details) {
-            console.error('[3D Tour ERROR]', msg, details);
-            const loading = document.getElementById('loading');
-            const loadingText = document.getElementById('loadingText');
-            const errorDetails = document.getElementById('errorDetails');
-            
-            loading.classList.add('error');
-            loadingText.textContent = msg;
-            errorDetails.textContent = details || '';
-        }
-
-        // Данные
-        const heroes = [
-            { name: "Петров А.И.", dates: "1985 — 2024", rank: "Майор", deed: "Организовал оборону, спас десятки жизней." },
-            { name: "Иванов С.П.", dates: "1992 — 2023", rank: "Старший лейтенант", deed: "Прикрывал отход раненых." },
-            { name: "Сидоров Д.А.", dates: "1988 — 2024", rank: "Сержант", deed: "Разведчик, погиб при прикрытии." },
-            { name: "Константинов М.В.", dates: "1990 — 2024", rank: "Ефрейтор", deed: "Вывел раненых под огнём." },
-            { name: "Федоров А.Ю.", dates: "1995 — 2023", rank: "Рядовой", deed: "Уничтожил БМП противника." }
-        ];
-
-        const rooms = [
-            { name: "Входной зал", url: "https://www.marzipano.net/demos/common/placeholder-0.jpg", heroes: [] },
-            { name: "Зал Славы", url: "https://www.marzipano.net/demos/common/placeholder-1.jpg", heroes: [0, 1] },
-            { name: "Зал Героев", url: "https://www.marzipano.net/demos/common/placeholder-2.jpg", heroes: [2] },
-            { name: "Книга Памяти", url: "https://www.marzipano.net/demos/common/placeholder-3.jpg", heroes: [3, 4] },
-            { name: "Мемориал", url: "https://www.marzipano.net/demos/common/placeholder-0.jpg", heroes: [] }
-        ];
-
-        let viewer = null;
-        let scenes = [];
+        // Простой 3D тур на Three.js вместо Marzipano
+        let scene, camera, renderer;
         let currentRoom = 0;
+        let sphere, textureLoader;
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let targetRotation = { x: 0, y: 0 };
+        
+        const rooms = [
+            { name: "Вход", image: "https://picsum.photos/4000/2000?random=1" },
+            { name: "Зал Славы", image: "https://picsum.photos/4000/2000?random=2" },
+            { name: "Галерея", image: "https://picsum.photos/4000/2000?random=3" },
+            { name: "Мемориал", image: "https://picsum.photos/4000/2000?random=4" }
+        ];
 
-        // Проверка загрузки Marzipano
-        function checkMarzipano() {
-            log('Проверка Marzipano...');
-            if (typeof Marzipano === 'undefined') {
-                showError('Библиотека Marzipano не загрузилась', 'Проверьте подключение к интернету');
-                return false;
-            }
-            log('Marzipano загружен: ' + Marzipano.version);
-            return true;
+        function updateStatus(text) {
+            document.getElementById('status').textContent = text;
         }
 
-        // Инициализация
-        function init() {
-            log('Начало инициализации...');
+        function showError(msg) {
+            const loading = document.getElementById('loading');
+            loading.classList.add('error');
+            document.getElementById('errorText').textContent = msg;
+        }
 
-            if (!checkMarzipano()) return;
+        function init() {
+            updateStatus('Проверка WebGL...');
+            
+            // Проверка Three.js
+            if (typeof THREE === 'undefined') {
+                showError('Ошибка: Three.js не загрузился\n\nПопробуйте:\n1. Обновить страницу\n2. Проверить интернет\n3. Отключить блокировщики');
+                return;
+            }
 
             try {
-                const pano = document.getElementById('pano');
-                log('Создание Viewer...');
+                updateStatus('Создание 3D сцены...');
                 
-                viewer = new Marzipano.Viewer(pano, {
-                    stage: { preserveDrawingBuffer: true }
-                });
+                // Сцена
+                scene = new THREE.Scene();
                 
-                log('Viewer создан');
-
-                // Создаем сцены
-                rooms.forEach((room, idx) => {
-                    try {
-                        log('Создание сцены ' + idx + ': ' + room.name);
-                        
-                        const source = Marzipano.ImageUrlSource.fromString(room.url);
-                        const geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
-                        const view = new Marzipano.RectilinearView({
-                            yaw: 0,
-                            pitch: 0,
-                            roll: 0,
-                            fov: Math.PI / 2
-                        });
-
-                        const scene = viewer.createScene({
-                            source: source,
-                            geometry: geometry,
-                            view: view,
-                            pinFirstLevel: true
-                        });
-
-                        log('Сцена ' + idx + ' создана, добавляем хотспоты...');
-
-                        // Хотспоты героев
-                        room.heroes.forEach((heroIdx, i) => {
-                            const yaw = -0.5 + (i * 0.5);
-                            const el = document.createElement('div');
-                            el.className = 'hotspot';
-                            el.innerHTML = '👤';
-                            el.onclick = function(e) {
-                                e.stopPropagation();
-                                showHero(heroIdx);
-                            };
-                            scene.hotspotContainer().createHotspot(el, { 
-                                yaw: yaw, 
-                                pitch: 0,
-                                radius: 100
-                            });
-                            log('  Добавлен хотспот для героя ' + heroIdx);
-                        });
-
-                        // Навигация
-                        if (idx > 0) {
-                            const left = document.createElement('div');
-                            left.className = 'nav-arrow';
-                            left.innerHTML = '←';
-                            left.onclick = function(e) {
-                                e.stopPropagation();
-                                goToRoom(idx - 1);
-                            };
-                            scene.hotspotContainer().createHotspot(left, { 
-                                yaw: -Math.PI/2.5, 
-                                pitch: 0,
-                                radius: 150
-                            });
-                        }
-
-                        if (idx < rooms.length - 1) {
-                            const right = document.createElement('div');
-                            right.className = 'nav-arrow';
-                            right.innerHTML = '→';
-                            right.onclick = function(e) {
-                                e.stopPropagation();
-                                goToRoom(idx + 1);
-                            };
-                            scene.hotspotContainer().createHotspot(right, { 
-                                yaw: Math.PI/2.5, 
-                                pitch: 0,
-                                radius: 150
-                            });
-                        }
-
-                        scenes.push(scene);
-                        log('Сцена ' + idx + ' готова');
-
-                    } catch (sceneError) {
-                        log('ОШИБКА в сцене ' + idx + ': ' + sceneError.message);
-                        console.error(sceneError);
-                    }
-                });
-
-                if (scenes.length === 0) {
-                    showError('Не удалось создать ни одну сцену', 'Проверьте консоль для деталей');
-                    return;
-                }
-
-                log('Все сцены созданы: ' + scenes.length);
+                // Камера
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.z = 0.1;
+                
+                // Рендерер
+                renderer = new THREE.WebGLRenderer({ antialias: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(window.devicePixelRatio);
+                document.getElementById('pano').appendChild(renderer.domElement);
+                
+                // Загрузчик текстур
+                textureLoader = new THREE.TextureLoader();
+                
+                // Загрузка первой комнаты
+                updateStatus('Загрузка панорам...');
+                loadRoom(0);
+                
+                // Обработчики событий
+                setupControls();
                 
                 // Скрываем загрузку
                 document.getElementById('loading').style.display = 'none';
                 
-                // Показываем инструкцию
-                document.getElementById('instructions').classList.remove('hidden');
+                // Анимация
+                animate();
                 
-                // Переходим в первую комнату
-                goToRoom(0);
-                
-                log('Инициализация завершена успешно');
-
-            } catch (error) {
-                showError('Ошибка инициализации', error.message);
-                console.error(error);
-            }
-        }
-
-        function goToRoom(idx) {
-            if (idx < 0 || idx >= scenes.length) {
-                log('Неверный индекс комнаты: ' + idx);
-                return;
-            }
-            
-            log('Переход в комнату ' + idx + ': ' + rooms[idx].name);
-            currentRoom = idx;
-            
-            try {
-                scenes[idx].switchTo();
-                document.getElementById('roomName').textContent = rooms[idx].name;
-                
-                document.querySelectorAll('.room-btn').forEach((btn, i) => {
-                    btn.classList.toggle('active', i === idx);
-                });
-                
-                log('Переход выполнен');
             } catch (e) {
-                log('Ошибка перехода: ' + e.message);
+                showError('Ошибка инициализации 3D:\n' + e.message);
+                console.error(e);
             }
         }
 
-        function showHero(idx) {
-            log('Показ героя ' + idx);
-            const h = heroes[idx];
-            document.getElementById('hName').textContent = h.name;
-            document.getElementById('hDates').textContent = h.dates;
-            document.getElementById('hRank').textContent = h.rank;
-            document.getElementById('hDeed').textContent = h.deed;
-            document.getElementById('heroModal').classList.add('active');
+        function loadRoom(index) {
+            currentRoom = index;
+            const room = rooms[index];
+            
+            document.getElementById('roomName').textContent = room.name;
+            
+            // Удаляем старую сферу
+            if (sphere) {
+                scene.remove(sphere);
+                sphere.geometry.dispose();
+                sphere.material.dispose();
+            }
+            
+            // Загружаем текстуру
+            textureLoader.load(
+                room.image,
+                function(texture) {
+                    // Создаем сферу
+                    const geometry = new THREE.SphereGeometry(500, 60, 40);
+                    geometry.scale(-1, 1, 1); // Инвертируем для вида изнутри
+                    
+                    const material = new THREE.MeshBasicMaterial({
+                        map: texture
+                    });
+                    
+                    sphere = new THREE.Mesh(geometry, material);
+                    scene.add(sphere);
+                    
+                    // Обновляем кнопки
+                    document.querySelectorAll('.btn').forEach((btn, i) => {
+                        btn.classList.toggle('active', i === index);
+                    });
+                },
+                undefined,
+                function(err) {
+                    console.error('Ошибка загрузки текстуры:', err);
+                    showError('Не удалось загрузить панораму ' + room.name);
+                }
+            );
         }
 
-        function closeHero() {
-            document.getElementById('heroModal').classList.remove('active');
+        function changeRoom(index) {
+            if (index !== currentRoom) {
+                loadRoom(index);
+            }
         }
 
-        function startTour() {
-            document.getElementById('instructions').classList.add('hidden');
+        function setupControls() {
+            const canvas = renderer.domElement;
+            
+            // Мышь
+            canvas.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+            
+            canvas.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                
+                const deltaMove = {
+                    x: e.clientX - previousMousePosition.x,
+                    y: e.clientY - previousMousePosition.y
+                };
+                
+                targetRotation.y += deltaMove.x * 0.005;
+                targetRotation.x += deltaMove.y * 0.005;
+                
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+            
+            canvas.addEventListener('mouseup', function() {
+                isDragging = false;
+            });
+            
+            canvas.addEventListener('mouseleave', function() {
+                isDragging = false;
+            });
+            
+            // Тач для мобильных
+            canvas.addEventListener('touchstart', function(e) {
+                isDragging = true;
+                previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            });
+            
+            canvas.addEventListener('touchmove', function(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                
+                const deltaMove = {
+                    x: e.touches[0].clientX - previousMousePosition.x,
+                    y: e.touches[0].clientY - previousMousePosition.y
+                };
+                
+                targetRotation.y += deltaMove.x * 0.005;
+                targetRotation.x += deltaMove.y * 0.005;
+                
+                previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            });
+            
+            canvas.addEventListener('touchend', function() {
+                isDragging = false;
+            });
+            
+            // Изменение размера окна
+            window.addEventListener('resize', function() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
         }
 
-        // Обработчики
-        document.getElementById('heroModal').addEventListener('click', function(e) {
-            if (e.target === this) closeHero();
-        });
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Плавное вращение
+            if (sphere) {
+                sphere.rotation.y += (targetRotation.y - sphere.rotation.y) * 0.1;
+                sphere.rotation.x += (targetRotation.x - sphere.rotation.x) * 0.1;
+            }
+            
+            renderer.render(scene, camera);
+        }
 
-        // Экспорт функций для onclick
-        window.goToRoom = goToRoom;
-        window.showHero = showHero;
-        window.closeHero = closeHero;
-        window.startTour = startTour;
+        // Экспорт функций
+        window.changeRoom = changeRoom;
 
         // Запуск
-        log('Скрипт загружен, ожидание DOM...');
-        
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
+        window.addEventListener('load', init);
     </script>
 </body>
 </html>
