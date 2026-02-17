@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Книга Памяти | Герои СВО Олёкминского района</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --gold: #d4af37;
+            --gold-light: #f4d03f;
+            --dark: #0a0a0a;
+            --red: #8b0000;
+            --red-dark: #4a0000;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: var(--dark);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .eternal-flame-bg {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to top, rgba(139,0,0,0.3), transparent);
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .flame {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 4rem;
+            animation: flicker 3s ease-in-out infinite;
+            text-shadow: 0 0 30px #ff6b35, 0 0 60px #ff6b35;
+        }
+        
+        @keyframes flicker {
+            0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+            25% { opacity: 0.8; transform: translateX(-50%) scale(0.95); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+            75% { opacity: 0.9; transform: translateX(-50%) scale(0.98); }
+        }
+        
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.95), transparent);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(212,175,55,0.5);
+        }
+        
+        .header .subtitle {
+            font-size: 1.2rem;
+            color: #888;
+            margin-bottom: 20px;
+        }
+        
+        .header .motto {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            color: var(--red);
+            font-style: italic;
+            letter-spacing: 3px;
+        }
+        
+        .section-nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(0,0,0,0.8);
+            border-bottom: 1px solid var(--gold);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+        }
+        
+        .section-btn {
+            padding: 12px 30px;
+            background: transparent;
+            border: 2px solid rgba(212,175,55,0.3);
+            color: var(--gold);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .section-btn:hover, .section-btn.active {
+            background: var(--gold);
+            color: #000;
+            box-shadow: 0 0 20px rgba(212,175,55,0.5);
+        }
+        
+        .sections-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .hero-main {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+        
+        .hero-portrait {
+            position: relative;
+        }
+        
+        .hero-portrait img {
+            width: 100%;
+            border-radius: 10px;
+            border: 4px solid var(--gold);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        
+        .hero-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: var(--red);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 20px rgba(139,0,0,0.5);
+        }
+        
+        .hero-info h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+        
+        .hero-dates {
+            font-size: 1.5rem;
+            color: var(--red);
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        
+        .hero-quote {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            font-style: italic;
+            color: #aaa;
+            border-left: 4px solid var(--gold);
+            padding-left: 20px;
+            margin: 30px 0;
+            line-height: 1.6;
+        }
+        
+        .info-grid {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .info-card {
+            background: rgba(212,175,55,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--gold);
+        }
+        
+        .info-card h3 {
+            color: var(--gold);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+        
+        .info-card p {
+            color: #ccc;
+            line-height: 1.6;
+        }
+        
+        .awards-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .award-item {
+            background: linear-gradient(135deg, var(--gold), #b8860b);
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .memory-book h2 {
+            text-align: center;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 40px;
+        }
+        
+        .heroes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        
+        .hero-card {
+            background: rgba(0,0,0,0.6);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .hero-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(212,175,55,0.2);
+        }
+        
+        .hero-card-img {
+            width: 100%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+        }
+        
+        .hero-card-content {
+            padding: 20px;
+        }
+        
+        .hero-card-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            color: var(--gold);
+            margin-bottom: 5px;
+        }
+        
+        .hero-card-dates {
+            color: var(--red);
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+        
+        .hero-card-rank {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .hero-card-awards {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .mini-award {
+            background: rgba(212,175,55,0.2);
+            color: var(--gold);
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+        }
+        
+        .flowers-section {
+            text-align: center;
+        }
+        
+        .flowers-section h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+        
+        .flowers-intro {
+            color: #888;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        
+        .flower-selection {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+        
+        .flower-option {
+            background: rgba(0,0,0,0.6);
+            border: 3px solid transparent;
+            border-radius: 20px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 150px;
+        }
+        
+        .flower-option:hover, .flower-option.selected {
+            border-color: var(--gold);
+            background: rgba(212,175,55,0.1);
+            transform: scale(1.05);
+        }
+        
+        .flower-option .emoji {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .flower-option .name {
+            color: var(--gold);
+            font-weight: 600;
+        }
+        
+        .memorial-wall {
+            background: linear-gradient(180deg, rgba(139,0,0,0.1), rgba(0,0,0,0.8));
+            border-radius: 20px;
+            padding: 40px;
+            min-height: 400px;
+            position: relative;
+        }
+        
+        .memorial-wall h3 {
+            color: var(--gold);
+            margin-bottom: 30px;
+            font-size: 1.3rem;
+        }
+        
+        .placed-flowers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            min-height: 200px;
+        }
+        
+        .placed-flower {
+            font-size: 3rem;
+            animation: placeFlower 0.5s ease-out;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .placed-flower:hover {
+            transform: scale(1.2);
+        }
+        
+        @keyframes placeFlower {
+            from { transform: scale(0) rotate(-180deg); opacity: 0; }
+            to { transform: scale(1) rotate(0); opacity: 1; }
+        }
+        
+        .flower-form {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .flower-form input, .flower-form textarea {
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--gold);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .flower-form input::placeholder, .flower-form textarea::placeholder {
+            color: #666;
+        }
+        
+        .btn-lay {
+            padding: 15px 40px;
+            background: var(--red);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .btn-lay:hover {
+            background: var(--gold);
+            color: #000;
+            box-shadow: 0 0 30px rgba(212,175,55,0.5);
+        }
+        
+        .gallery-section h2 {
+            text-align: center;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 40px;
+        }
+        
+        .gallery-masonry {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .gallery-item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .gallery-placeholder {
+            font-size: 4rem;
+            opacity: 0.3;
+        }
+        
+        .gallery-item-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            color: white;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            padding: 40px;
+            overflow-y: auto;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            color: var(--gold);
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        
+        .stats-bar {
+            background: rgba(139,0,0,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .stats-bar .number {
+            font-size: 3rem;
+            color: var(--gold);
+            font-weight: bold;
+        }
+        
+        .stats-bar .label {
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        @media (max-width: 900px) {
+            .hero-main {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-portrait {
+                max-width: 400px;
+                margin: 0 auto;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+                letter-spacing: 4px;
+            }
+            
+            .section-nav {
+                gap: 10px;
+            }
+            
+            .section-btn {
+                padding: 10px 20px;
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .flower-selection {
+                gap: 15px;
+            }
+            
+            .flower-option {
+                width: 120px;
+                padding: 20px;
+            }
+            
+            .flower-option .emoji {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="eternal-flame-bg">
+        <div class="flame">🔥</div>
+    </div>
+    
+    <header class="header">
+        <h1>Книга Памяти</h1>
+        <p class="subtitle">Олёкминский район, Республика Саха (Якутия)</p>
+        <p class="motto">«Не забудем, не простим»</p>
+    </header>
+    
+    <nav class="section-nav">
+        <button class="section-btn active" onclick="showSection('hero')">⭐ Герой</button>
+        <button class="section-btn" onclick="showSection('book')">📖 Книга Памяти</button>
+        <button class="section-btn" onclick="showSection('flowers')">🌹 Возложить цветы</button>
+        <button class="section-btn" onclick="showSection('gallery')">🖼️ Галерея</button>
+    </nav>
+    
+    <div class="sections-container">
+        <!-- Статистика -->
+        <div class="stats-bar">
+            <div class="number">5</div>
+            <div class="label">Героев Олёкминского района</div>
+        </div>
+        
+        <!-- Секция: Главный герой -->
+        <section id="hero" class="section active">
+            <div class="hero-main">
+                <div class="hero-portrait">
+                    <img src="https://via.placeholder.com/400x500/2a2a2a/d4af37?text=👤" alt="Фото героя" id="mainHeroPhoto">
+                    <div class="hero-badge" id="mainHeroBadge">🎖️ Герой России</div>
+                </div>
+                
+                <div class="hero-info">
+                    <h2 id="mainHeroName">Петров Алексей Иванович</h2>
+                    <div class="hero-dates" id="mainHeroDates">1985 — 2024</div>
+                    
+                    <blockquote class="hero-quote" id="mainHeroQuote">
+                        «Мы защищаем не просто землю. Мы защищаем наших детей, наших женщин, наше будущее. 
+                        Если не мы, то кто?»
+                    </blockquote>
+                    
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h3>Воинское звание</h3>
+                            <p id="mainHeroRank">Майор, командир батальона</p>
+                        </div>
+                        
+                        <div class="info-card">
+                            <h3>Подвиг</h3>
+                            <p id="mainHeroDeed">
+                                При выполнении боевой задачи в Донецкой Народной Республике проявил 
+                                исключительное мужество и героизм. Организовал оборону населённого пункта, 
+                                лично повёл бойцов в контратаку. Ценой собственной жизни спас десятки 
+                                мирных жителей и военнослужащих.
+                            </p>
+                        </div>
+                        
+                        <div class="info-card">
+                            <h3>Награды</h3>
+                            <div class="awards-display" id="mainHeroAwards">
+                                <span class="award-item">🎖️ Герой России</span>
+                                <span class="award-item">⭐ Орден Мужества</span>
+                                <span class="award-item">🥇 Медаль «За отвагу»</span>
+                                <span class="award-item">🎖️ Орден Красной Звезды</span>
+                            </div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <h3>Место гибели</h3>
+                            <p id="mainHeroLocation">Донецкая Народная Республика, г. Авдеевка</p>
+                        </div>
+                        
+                        <div class="info-card">
+                            <h3>Биография</h3>
+                            <p id="mainHeroBio">
+                                Родился в посёлке Тюгюлюр Олёкминского района. Окончил Олёкминскую школу №2. 
+                                Служил в армии с 2003 года. Участвовал в миротворческих операциях. 
+                                Оставил жену и двоих детей.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Секция: Книга Памяти -->
+        <section id="book" class="section memory-book">
+            <h2>Все герои Олёкминского района</h2>
+            
+            <div class="heroes-grid" id="heroesGrid">
+                <!-- Карточки добавляются через JS -->
+            </div>
+        </section>
+        
+        <!-- Секция: Возложение цветов -->
+        <section id="flowers" class="section flowers-section">
+            <h2>🌹 Возложите виртуальные цветы</h2>
+            
+            <p class="flowers-intro">
+                Выберите цветы и оставьте свои слова благодарности героям.
+                <br>Ваши цветы будут добавлены к мемориалу.
+            </p>
+            
+            <div class="flower-selection">
+                <div class="flower-option selected" data-flower="🌹" onclick="selectFlower(this)">
+                    <span class="emoji">🌹</span>
+                    <span class="name">Роза</span>
+                </div>
+                <div class="flower-option" data-flower="🌻" onclick="selectFlower(this)">
+                    <span class="emoji">🌻</span>
+                    <span class="name">Подсолнух</span>
+                </div>
+                <div class="flower-option" data-flower="🌷" onclick="selectFlower(this)">
+                    <span class="emoji">🌷</span>
+                    <span class="name">Тюльпан</span>
+                </div>
+                <div class="flower-option" data-flower="🌺" onclick="selectFlower(this)">
+                    <span class="emoji">🌺</span>
+                    <span class="name">Гибискус</span>
+                </div>
+                <div class="flower-option" data-flower="🏵️" onclick="selectFlower(this)">
+                    <span class="emoji">🏵️</span>
+                    <span class="name">Георгиевская</span>
+                </div>
+            </div>
+            
+            <div class="memorial-wall">
+                <h3>🕯️ Мемориал (всего возложено: <span id="flowerCount">0</span>)</h3>
+                
+                <div class="placed-flowers" id="placedFlowers">
+                    <!-- Цветы добавляются сюда -->
+                </div>
+                
+                <div class="flower-form">
+                    <input type="text" id="flowerName" placeholder="Ваше имя" maxlength="50">
+                    <textarea id="flowerMessage" placeholder="Ваши слова благодарности..." rows="3" maxlength="200"></textarea>
+                    <button class="btn-lay" onclick="layFlower()">🌹 Возложить цветы</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Секция: Галерея -->
+        <section id="gallery" class="section gallery-section">
+            <h2>Фотоархив</h2>
+            
+            <div class="gallery-masonry" id="galleryGrid">
+                <!-- Фото добавляются через JS -->
+            </div>
+        </section>
+    </div>
+    
+    <!-- Модальное окно для просмотра -->
+    <div class="modal" id="modal">
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+        <div class="modal-content" id="modalContent">
+            <!-- Контент -->
+        </div>
+    </div>
+    
+    <script>
+        // Данные о героях (5 тестовых)
+        const heroes = [
+            {
+                id: 1,
+                name: "Петров Алексей Иванович",
+                dates: "1985 — 2024",
+                photo: "https://via.placeholder.com/400x500/2a2a2a/d4af37?text=👤",
+                rank: "Майор, командир батальона",
+                quote: "Мы защищаем наше будущее. Если не мы, то кто?",
+                deed: "Организовал оборону населённого пункта, лично повёл бойцов в контратаку. Ценой собственной жизни спас десятки мирных жителей.",
+                awards: ["Герой России", "Орден Мужества", "Медаль «За отвагу»", "Орден Красной Звезды"],
+                location: "ДНР, г. Авдеевка",
+                bio: "Родился в посёлке Тюгюлюр Олёкминского района. Окончил Олёкминскую школу №2. Служил в армии с 2003 года. Оставил жену и двоих детей."
+            },
+            {
+                id: 2,
+                name: "Иванов Сергей Петрович",
+                dates: "1992 — 2023",
+                photo: "https://via.placeholder.com/400x500/2a2a2a/d4af37?text=👤",
+                rank: "Старший лейтенант, командир взвода",
+                quote: "За Родину, за Якутию!",
+                deed: "При выполнении боевой задачи в зоне СВО прикрывал отход раненых товарищей. Погиб, приняв неравный бой.",
+                awards: ["Орден Мужества", "Медаль «За отвагу»"],
+                location: "ЛНР, Кременная",
+                bio: "Родился в селе Хат sty Олёкминского района. Закончил Якутский колледж связи. Призван в 2022 году. Оставил родителей и младшую сестру."
+            },
+            {
+                id: 3,
+                name: "Сидоров Дмитрий Алексеевич",
+                dates: "1988 — 2024",
+                photo: "https://via.placeholder.com/400x500/2a2a2a/d4af37?text=👤",
+                rank: "Сержант, старший разведчик",
+                quote: "Не отступим, не сдадимся!",
+                deed: "В составе разведывательной группы выполнял задание по выявлению позиций противника. Погиб при прикрытии выхода группы.",
+                awards: ["Орден Красной Звезды", "Медаль «За отвагу»", "Медаль «За боевые заслуги»"],
+                location: "Запорожская область",
+                bio: "Родился в городе Олёкминск. Работал вахтёром. Добровольцем пошёл на фронт в 2023 году. Холост."
+            },
+            {
+                id: 4,
+                name: "Константинов Михаил Васильевич",
+                dates: "1990 — 2024",
+                photo: "https://via.placeholder.com/400x500/2a2a2a/d4af37?text=👤",
+                rank: "Ефрейтор, наводчик БМП",
+                quote: "До последнего патрона, до последнего вздоха.",
+                deed: "Участвовал в освобождении населённого пункта. БМП была подбита, экипаж вывел раненых под огнём, прикрывая отход.",
+                awards: ["Медаль «За отвагу»", "Медаль «За боевые заслуги»"],
+                location: "ДНР, Артёмовское направление",
+                bio: "Родился в посёлке Сангар. Окончил Сангарскую школу. Работал водителем. Призван по мобилизации. Оставил жену и сына."
+            },
+            {
+                id: 5,
+                name: "Федоров Артём Юрьевич",
+                dates: "1995 — 2023",
+                photo: "https://via.placeholder.com/400x500/2a2a2a/d4af37?text=👤",
+                rank: "Рядовой, стрелок",
+                quote: "Я защищаю свою семью, свой дом, свою страну.",
+                deed: "Во время отражения контратаки противника подавил два пулемёта и уничтожил боевую машину пехоты. Погиб от осколочного ранения.",
+                awards: ["Орден Мужества"],
+                location: "Херсонская область",
+                bio: "Родился в городе Олёкминск. Учился в Якутском строительном техникуме. Работал на стройке. Призван в 2022 году. Оставил невесту."
+            }
+        ];
+        
+        // Галерея (плейсхолдеры)
+        const galleryPhotos = [
+            { src: null, emoji: "🎖️", title: "Награждение", desc: "Вручение орденов перед отправкой" },
+            { src: null, emoji: "📸", title: "Присяга", desc: "День принятия военной присяги" },
+            { src: null, emoji: "👨‍👩‍👧", title: "С семьёй", desc: "Последнее фото с родными" },
+            { src: null, emoji: "🎓", title: "Выпускной", desc: "Выпускной в школе" },
+            { src: null, emoji: "🏔️", title: "На службе", desc: "Боевая позиция" },
+            { src: null, emoji: "🚁", title: "В зоне СВО", desc: "Выполнение боевой задачи" }
+        ];
+        
+        // Состояние
+        let selectedFlower = '🌹';
+        let currentHero = 0;
+        let laidFlowers = JSON.parse(localStorage.getItem('laidFlowers') || '[]');
+        
+        // Переключение секций
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.section-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (sectionId === 'book') renderHeroesGrid();
+            if (sectionId === 'gallery') renderGallery();
+            if (sectionId === 'flowers') renderLaidFlowers();
+        }
+        
+        // Рендер Книги Памяти
+        function renderHeroesGrid() {
+            const grid = document.getElementById('heroesGrid');
+            grid.innerHTML = heroes.map(hero => `
+                <div class="hero-card" onclick="showHero(${hero.id})">
+                    <div class="hero-card-img">👤</div>
+                    <div class="hero-card-content">
+                        <div class="hero-card-name">${hero.name}</div>
+                        <div class="hero-card-dates">${hero.dates}</div>
+                        <div class="hero-card-rank">${hero.rank}</div>
+                        <div class="hero-card-awards">
+                            ${hero.awards.slice(0, 2).map(a => `<span class="mini-award">${a}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Показать героя
+        function showHero(id) {
+            const hero = heroes.find(h => h.id === id);
+            if (!hero) return;
+            
+            currentHero = heroes.indexOf(hero);
+            
+            document.getElementById('mainHeroName').textContent = hero.name;
+            document.getElementById('mainHeroDates').textContent = hero.dates;
+            document.getElementById('mainHeroPhoto').src = hero.photo;
+            document.getElementById('mainHeroRank').textContent = hero.rank;
+            document.getElementById('mainHeroQuote').textContent = '"' + hero.quote + '"';
+            document.getElementById('mainHeroDeed').textContent = hero.deed;
+            document.getElementById('mainHeroLocation').textContent = hero.location;
+            document.getElementById('mainHeroBio').textContent = hero.bio;
+            
+            const awardsHtml = hero.awards.map(a => `<span class="award-item">${a}</span>`).join('');
+            document.getElementById('mainHeroAwards').innerHTML = awardsHtml;
+            
+            const badge = hero.awards.includes('Герой России') ? '🎖️ Герой России' : '⭐ Герой';
+            document.getElementById('mainHeroBadge').textContent = badge;
+            
+            showSection('hero');
+            document.querySelector('.section-btn').classList.add('active');
+        }
+        
+        // Рендер галереи
+        function renderGallery() {
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = galleryPhotos.map((photo, i) => `
+                <div class="gallery-item" onclick="openModal(${i})">
+                    <div class="gallery-placeholder">${photo.emoji}</div>
+                    <div class="gallery-item-overlay">
+                        <strong>${photo.title}</strong>
+                        <p>${photo.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Модальное окно
+        function openModal(index) {
+            const photo = galleryPhotos[index];
+            document.getElementById('modalContent').innerHTML = `
+                <div class="gallery-placeholder" style="font-size: 8rem; text-align: center;">${photo.emoji}</div>
+                <h3 style="color: var(--gold); margin-top: 20px; text-align: center;">${photo.title}</h3>
+                <p style="color: #888; text-align: center;">${photo.desc}</p>
+            `;
+            document.getElementById('modal').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+        
+        // Выбор цветов
+        function selectFlower(el) {
+            document.querySelectorAll('.flower-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedFlower = el.dataset.flower;
+        }
+        
+        // Возложить цветы
+        function layFlower() {
+            const name = document.getElementById('flowerName').value.trim() || 'Аноним';
+            const message = document.getElementById('flowerMessage').value.trim();
+            
+            const flowerData = {
+                flower: selectedFlower,
+                name: name,
+                message: message,
+                date: new Date().toLocaleDateString('ru-RU'),
+                hero: heroes[currentHero]?.name || 'Всем героям',
+                id: Date.now()
+            };
+            
+            laidFlowers.push(flowerData);
+            localStorage.setItem('laidFlowers', JSON.stringify(laidFlowers));
+            
+            document.getElementById('flowerName').value = '';
+            document.getElementById('flowerMessage').value = '';
+            
+            renderLaidFlowers();
+            
+            alert(`Спасибо, ${name}! Ваши цветы возложены к мемориалу.`);
+        }
+        
+        // Отобразить возложенные цветы
+        function renderLaidFlowers() {
+            const container = document.getElementById('placedFlowers');
+            document.getElementById('flowerCount').textContent = laidFlowers.length;
+            
+            if (laidFlowers.length === 0) {
+                container.innerHTML = '<p style="color: #666; width: 100%;">Пока никто не возлагал цветы. Будьте первым!</p>';
+                return;
+            }
+            
+            container.innerHTML = laidFlowers.map(f => `
+                <div class="placed-flower" title="${f.name} (${f.date}): ${f.message || 'Нет сообщения'}" onclick="alert('${f.name}: ${f.message || 'Спасибо за подвиг!'}')">
+                    ${f.flower}
+                </div>
+            `).join('');
+        }
+        
+        // Закрыть модальное при клике вне
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+        
+        // Инициализация
+        renderLaidFlowers();
+        
+        // Загрузить первого героя при старте
+        showHero(1);
+    </script>
+</body>
+</html>
