@@ -4,20 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Виртуальный музей | 3D Тур</title>
-    <script src="https://www.marzipano.net/build/marzipano.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        :root {
-            --gold: #d4af37;
-            --dark: #0a0a0a;
-            --red: #8b0000;
-        }
-        
         body {
             font-family: 'Open Sans', sans-serif;
-            background: var(--dark);
+            background: #0a0a0a;
             color: #e0e0e0;
             overflow: hidden;
         }
@@ -30,7 +23,7 @@
             background: rgba(0,0,0,0.95);
             padding: 15px 20px;
             z-index: 1000;
-            border-bottom: 2px solid var(--gold);
+            border-bottom: 2px solid #d4af37;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -39,19 +32,9 @@
         .header h1 {
             font-family: 'Cormorant Garamond', serif;
             font-size: 1.5rem;
-            color: var(--gold);
+            color: #d4af37;
             text-transform: uppercase;
             letter-spacing: 3px;
-        }
-        
-        .room-indicator {
-            color: #888;
-            font-size: 0.9rem;
-        }
-        
-        .room-indicator span {
-            color: var(--gold);
-            font-weight: 600;
         }
         
         #pano {
@@ -63,37 +46,58 @@
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
         }
         
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 100;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(212,175,55,0.3);
+            border-top-color: #d4af37;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
         .room-nav {
             position: fixed;
-            bottom: 30px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             gap: 10px;
             z-index: 1000;
             background: rgba(0,0,0,0.9);
-            padding: 15px 25px;
+            padding: 12px 20px;
             border-radius: 50px;
-            border: 1px solid var(--gold);
+            border: 1px solid #d4af37;
             flex-wrap: wrap;
             justify-content: center;
-            max-width: 90%;
         }
         
         .room-btn {
-            padding: 10px 20px;
+            padding: 10px 18px;
             background: transparent;
             border: 2px solid rgba(212,175,55,0.3);
-            color: var(--gold);
+            color: #d4af37;
             border-radius: 25px;
             cursor: pointer;
+            font-size: 0.85rem;
             transition: all 0.3s;
-            font-size: 0.9rem;
-            white-space: nowrap;
         }
         
         .room-btn:hover, .room-btn.active {
-            background: var(--gold);
+            background: #d4af37;
             color: #000;
         }
         
@@ -103,35 +107,34 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background: rgba(0,0,0,0.95);
-            color: white;
             padding: 40px;
             border-radius: 20px;
             text-align: center;
             z-index: 2000;
-            max-width: 500px;
-            border: 2px solid var(--gold);
+            max-width: 450px;
+            border: 2px solid #d4af37;
         }
         
         .instructions h2 {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 2rem;
-            color: var(--gold);
+            font-size: 1.8rem;
+            color: #d4af37;
             margin-bottom: 20px;
         }
         
         .instructions p {
-            margin-bottom: 15px;
-            line-height: 1.6;
+            margin-bottom: 12px;
             color: #ccc;
+            font-size: 0.95rem;
         }
         
         .instructions button {
-            background: var(--gold);
+            background: #d4af37;
             color: #000;
             border: none;
             padding: 15px 40px;
             border-radius: 30px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
             margin-top: 20px;
             font-weight: 600;
@@ -141,7 +144,7 @@
             display: none;
         }
         
-        .photo-modal {
+        .hero-modal {
             display: none;
             position: fixed;
             top: 0;
@@ -150,77 +153,83 @@
             bottom: 0;
             background: rgba(0,0,0,0.95);
             z-index: 3000;
-            padding: 40px;
+            padding: 20px;
             overflow-y: auto;
         }
         
-        .photo-modal.active {
+        .hero-modal.active {
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
-        .photo-modal-content {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 40px;
-            max-width: 900px;
-            width: 100%;
-            background: rgba(20,20,20,0.95);
-            padding: 40px;
+        .hero-modal-content {
+            background: #1a1a1a;
             border-radius: 20px;
-            border: 2px solid var(--gold);
-        }
-        
-        .photo-modal-img {
+            max-width: 500px;
             width: 100%;
-            border-radius: 10px;
-            border: 3px solid var(--gold);
+            border: 2px solid #d4af37;
+            overflow: hidden;
         }
         
-        .photo-modal-info h2 {
+        .hero-modal-img {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6rem;
+        }
+        
+        .hero-modal-info {
+            padding: 30px;
+        }
+        
+        .hero-modal-info h2 {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 2rem;
-            color: var(--gold);
-            margin-bottom: 10px;
-        }
-        
-        .photo-modal-info .dates {
-            color: var(--red);
-            font-size: 1.3rem;
-            margin-bottom: 20px;
-        }
-        
-        .photo-modal-info .info-block {
-            background: rgba(212,175,55,0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            border-left: 3px solid var(--gold);
-        }
-        
-        .photo-modal-info .info-block h3 {
-            color: var(--gold);
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            font-size: 1.8rem;
+            color: #d4af37;
             margin-bottom: 8px;
         }
         
-        .close-modal {
+        .hero-modal-info .dates {
+            color: #8b0000;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .hero-modal-info .info-row {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(212,175,55,0.2);
+        }
+        
+        .hero-modal-info .info-row h3 {
+            color: #d4af37;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+        
+        .close-btn {
             position: absolute;
             top: 20px;
             right: 20px;
-            font-size: 2.5rem;
-            color: var(--gold);
-            background: none;
-            border: none;
+            width: 50px;
+            height: 50px;
+            background: #1a1a1a;
+            border: 2px solid #d4af37;
+            border-radius: 50%;
+            color: #d4af37;
+            font-size: 1.5rem;
             cursor: pointer;
         }
         
         .hotspot {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background: rgba(212,175,55,0.9);
             border: 3px solid white;
             border-radius: 50%;
@@ -228,356 +237,195 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             box-shadow: 0 0 20px rgba(212,175,55,0.5);
-            transition: all 0.3s;
-        }
-        
-        .hotspot:hover {
-            transform: scale(1.2);
-        }
-        
-        .hotspot-label {
-            position: absolute;
-            bottom: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.9);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            white-space: nowrap;
-            border: 1px solid var(--gold);
         }
         
         .nav-arrow {
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
             background: rgba(139,0,0,0.9);
-            border: 3px solid var(--gold);
+            border: 2px solid #d4af37;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 1.5rem;
             color: white;
-            transition: all 0.3s;
-        }
-        
-        .nav-arrow:hover {
-            background: var(--gold);
-            color: #000;
-        }
-        
-        .demo-notice {
-            position: fixed;
-            top: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(139,0,0,0.9);
-            color: white;
-            padding: 15px 30px;
-            border-radius: 10px;
-            border: 2px solid var(--gold);
-            z-index: 500;
-            text-align: center;
-            max-width: 600px;
-        }
-        
-        .demo-notice h3 {
-            color: var(--gold);
-            margin-bottom: 10px;
         }
         
         @media (max-width: 768px) {
-            .photo-modal-content {
-                grid-template-columns: 1fr;
-                padding: 20px;
-            }
-            
-            .photo-modal-img {
-                max-width: 250px;
-                margin: 0 auto;
-            }
-            
-            .room-nav {
-                bottom: 10px;
-                padding: 10px 15px;
-            }
-            
-            .room-btn {
-                padding: 8px 15px;
-                font-size: 0.8rem;
-            }
-            
-            .demo-notice {
-                top: 80px;
-                left: 10px;
-                right: 10px;
-                transform: none;
-            }
+            .header h1 { font-size: 1.2rem; }
+            .room-nav { padding: 10px 15px; }
+            .room-btn { padding: 8px 12px; font-size: 0.75rem; }
         }
     </style>
 </head>
 <body>
     <header class="header">
         <h1>🏛️ Виртуальный музей</h1>
-        <div class="room-indicator">
-            Зал: <span id="currentRoomName">Главный зал</span>
+        <div style="color: #888; font-size: 0.9rem;">
+            Зал: <span id="roomName" style="color: #d4af37; font-weight: 600;">Загрузка...</span>
         </div>
     </header>
     
-    <div class="demo-notice">
-        <h3>🎥 Демо-режим</h3>
-        <p>Добавьте свои 360° панорамы в папку <strong>panoramas/</strong><br>
-        Снятые на Insta360 X4</p>
+    <div id="pano">
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>Загрузка 3D тура...</p>
+        </div>
     </div>
     
-    <div id="pano"></div>
-    
     <nav class="room-nav">
-        <button class="room-btn active" onclick="switchRoom(0)">🚪 Вход</button>
-        <button class="room-btn" onclick="switchRoom(1)">⭐ Зал Славы</button>
-        <button class="room-btn" onclick="switchRoom(2)">📖 Книга Памяти</button>
-        <button class="room-btn" onclick="switchRoom(3)">🎖️ Награды</button>
-        <button class="room-btn" onclick="switchRoom(4)">🕯️ Мемориал</button>
+        <button class="room-btn active" onclick="goToRoom(0)">🚪 Вход</button>
+        <button class="room-btn" onclick="goToRoom(1)">⭐ Зал 1</button>
+        <button class="room-btn" onclick="goToRoom(2)">⭐ Зал 2</button>
+        <button class="room-btn" onclick="goToRoom(3)">📖 Зал 3</button>
+        <button class="room-btn" onclick="goToRoom(4)">🕯️ Мемориал</button>
     </nav>
     
     <div class="instructions" id="instructions">
-        <h2>🏛️ Добро пожаловать</h2>
-        <p>🖱️ <strong>Мышь:</strong> тяните для осмотра вокруг</p>
-        <p>👆 <strong>Кликайте</strong> по золотым кругам — фото героев</p>
-        <p>🚪 <strong>Кнопки внизу</strong> — переход между залами</p>
+        <h2>🏛️ Виртуальный музей</h2>
+        <p>🖱️ Тяните мышью для осмотра</p>
+        <p>👆 Кликайте на 👤 — информация о герое</p>
+        <p>➤ Используйте стрелки для перехода</p>
         <button onclick="startTour()">Начать тур</button>
     </div>
     
-    <div class="photo-modal" id="photoModal">
-        <button class="close-modal" onclick="closePhotoModal()">&times;</button>
-        <div class="photo-modal-content">
-            <img src="" alt="Фото героя" class="photo-modal-img" id="modalImg">
-            <div class="photo-modal-info">
-                <h2 id="modalName">Имя героя</h2>
-                <div class="dates" id="modalDates">1990 — 2024</div>
-                <div class="info-block">
-                    <h3>Воинское звание</h3>
-                    <p id="modalRank">Звание</p>
+    <div class="hero-modal" id="heroModal">
+        <button class="close-btn" onclick="closeHero()">&times;</button>
+        <div class="hero-modal-content">
+            <div class="hero-modal-img">👤</div>
+            <div class="hero-modal-info">
+                <h2 id="hName">Имя</h2>
+                <div class="dates" id="hDates">Годы</div>
+                <div class="info-row">
+                    <h3>Звание</h3>
+                    <p id="hRank">-</p>
                 </div>
-                <div class="info-block">
+                <div class="info-row">
                     <h3>Подвиг</h3>
-                    <p id="modalDeed">Описание подвига</p>
+                    <p id="hDeed">-</p>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Marzipano CDN -->
+    <script src="https://www.marzipano.net/build/marzipano.js"></script>
+    
     <script>
-        // Данные о героях
+        // Герои
         const heroes = [
-            {
-                id: 0,
-                name: "Петров Алексей Иванович",
-                dates: "1985 — 2024",
-                rank: "Майор, командир батальона",
-                deed: "Организовал оборону населённого пункта, лично повёл бойцов в контратаку. Ценой жизни спас десятки мирных жителей.",
-                photo: "https://placehold.co/400x500/1a1a2e/d4af37?text=👤"
-            },
-            {
-                id: 1,
-                name: "Иванов Сергей Петрович",
-                dates: "1992 — 2023",
-                rank: "Старший лейтенант",
-                deed: "Прикрывал отход раненых товарищей. Погиб, приняв неравный бой.",
-                photo: "https://placehold.co/400x500/1a1a2e/d4af37?text=👤"
-            },
-            {
-                id: 2,
-                name: "Сидоров Дмитрий Алексеевич",
-                dates: "1988 — 2024",
-                rank: "Сержант, разведчик",
-                deed: "Выполнял задание по выявлению позиций противника. Погиб при прикрытии группы.",
-                photo: "https://placehold.co/400x500/1a1a2e/d4af37?text=👤"
-            },
-            {
-                id: 3,
-                name: "Константинов Михаил Васильевич",
-                dates: "1990 — 2024",
-                rank: "Ефрейтор, наводчик БМП",
-                deed: "БМП была подбита, экипаж вывел раненых под огнём.",
-                photo: "https://placehold.co/400x500/1a1a2e/d4af37?text=👤"
-            },
-            {
-                id: 4,
-                name: "Федоров Артём Юрьевич",
-                dates: "1995 — 2023",
-                rank: "Рядовой, стрелок",
-                deed: "При отражении контратаки подавил два пулемёта и уничтожил БМП.",
-                photo: "https://placehold.co/400x500/1a1a2e/d4af37?text=👤"
-            }
+            { name: "Петров А.И.", dates: "1985 — 2024", rank: "Майор", deed: "Организовал оборону, спас десятки жизней." },
+            { name: "Иванов С.П.", dates: "1992 — 2023", rank: "Старший лейтенант", deed: "Прикрывал отход раненых." },
+            { name: "Сидоров Д.А.", dates: "1988 — 2024", rank: "Сержант", deed: "Разведчик, погиб при прикрытии." },
+            { name: "Константинов М.В.", dates: "1990 — 2024", rank: "Ефрейтор", deed: "Вывел раненых под огнём." },
+            { name: "Федоров А.Ю.", dates: "1995 — 2023", rank: "Рядовой", deed: "Уничтожил БМП противника." }
         ];
 
-        // Конфигурация залов (с рабочими панорамами)
-        const rooms = [
-            {
-                name: "Входной зал",
-                // Рабочая панорама с CDN
-                panorama: "https://cdn.jsdelivr.net/gh/google/marzipano@master/demos/common/placeholder-0.jpg",
-                hotspots: [
-                    { yaw: 0, pitch: 0, heroId: null, type: "info" }
-                ],
-                navigation: [
-                    { yaw: Math.PI/3, pitch: 0, targetRoom: 1 }
-                ]
-            },
-            {
-                name: "Зал Славы",
-                panorama: "https://cdn.jsdelivr.net/gh/google/marzipano@master/demos/common/placeholder-1.jpg",
-                hotspots: [
-                    { yaw: -0.5, pitch: 0, heroId: 0 },
-                    { yaw: 0, pitch: 0, heroId: 1 },
-                    { yaw: 0.5, pitch: 0, heroId: 2 }
-                ],
-                navigation: [
-                    { yaw: -Math.PI/3, pitch: 0, targetRoom: 0 },
-                    { yaw: Math.PI/3, pitch: 0, targetRoom: 2 }
-                ]
-            },
-            {
-                name: "Книга Памяти",
-                panorama: "https://cdn.jsdelivr.net/gh/google/marzipano@master/demos/common/placeholder-2.jpg",
-                hotspots: [
-                    { yaw: -0.3, pitch: 0, heroId: 3 },
-                    { yaw: 0.3, pitch: 0, heroId: 4 }
-                ],
-                navigation: [
-                    { yaw: -Math.PI/3, pitch: 0, targetRoom: 1 },
-                    { yaw: Math.PI/3, pitch: 0, targetRoom: 3 }
-                ]
-            },
-            {
-                name: "Зал наград",
-                panorama: "https://cdn.jsdelivr.net/gh/google/marzipano@master/demos/common/placeholder-0.jpg",
-                hotspots: [],
-                navigation: [
-                    { yaw: -Math.PI/3, pitch: 0, targetRoom: 2 },
-                    { yaw: Math.PI/3, pitch: 0, targetRoom: 4 }
-                ]
-            },
-            {
-                name: "Мемориальный зал",
-                panorama: "https://cdn.jsdelivr.net/gh/google/marzipano@master/demos/common/placeholder-1.jpg",
-                hotspots: [],
-                navigation: [
-                    { yaw: -Math.PI/3, pitch: 0, targetRoom: 3 }
-                ]
-            }
+        // Рабочие панорамы с Marzipano демо
+        const roomData = [
+            { name: "Входной зал", url: "https://www.marzipano.net/demos/common/placeholder-0.jpg", heroes: [] },
+            { name: "Зал Славы", url: "https://www.marzipano.net/demos/common/placeholder-1.jpg", heroes: [0, 1] },
+            { name: "Зал Героев", url: "https://www.marzipano.net/demos/common/placeholder-2.jpg", heroes: [2] },
+            { name: "Книга Памяти", url: "https://www.marzipano.net/demos/common/placeholder-3.jpg", heroes: [3, 4] },
+            { name: "Мемориал", url: "https://www.marzipano.net/demos/common/placeholder-4.jpg", heroes: [] }
         ];
 
-        let currentRoom = 0;
-        let viewer;
-        let scenes = [];
+        let viewer, scenes = [], currentRoom = 0;
 
-        // Инициализация
         function init() {
             try {
-                const panoElement = document.getElementById('pano');
-                viewer = new Marzipano.Viewer(panoElement);
-                
-                // Создаем сцены
-                rooms.forEach((room, index) => {
-                    try {
-                        const source = Marzipano.ImageUrlSource.fromString(room.panorama);
-                        const geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
-                        const view = new Marzipano.RectilinearView({
-                            yaw: 0, pitch: 0, roll: 0, fov: Math.PI / 2
-                        });
-                        
-                        const scene = viewer.createScene({
-                            source: source,
-                            geometry: geometry,
-                            view: view,
-                            pinFirstLevel: true
-                        });
-                        
-                        // Хотспоты с фото
-                        const container = scene.hotspotContainer();
-                        
-                        room.hotspots.forEach(h => {
-                            if (h.heroId !== null) {
-                                const el = document.createElement('div');
-                                el.className = 'hotspot';
-                                el.innerHTML = '👤<div class="hotspot-label">' + heroes[h.heroId].name.split(' ')[0] + '</div>';
-                                el.onclick = () => showHeroInfo(h.heroId);
-                                container.createHotspot(el, { yaw: h.yaw, pitch: h.pitch });
-                            }
-                        });
-                        
-                        // Навигационные стрелки
-                        room.navigation.forEach(nav => {
-                            const el = document.createElement('div');
-                            el.className = 'nav-arrow';
-                            el.innerHTML = '➤';
-                            el.onclick = () => switchRoom(nav.targetRoom);
-                            container.createHotspot(el, { yaw: nav.yaw, pitch: nav.pitch });
-                        });
-                        
-                        scenes.push(scene);
-                    } catch (e) {
-                        console.error('Error creating scene:', e);
+                const pano = document.getElementById('pano');
+                viewer = new Marzipano.Viewer(pano);
+
+                roomData.forEach((room, idx) => {
+                    const source = Marzipano.ImageUrlSource.fromString(room.url);
+                    const geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
+                    const view = new Marzipano.RectilinearView({ yaw: 0, pitch: 0, fov: Math.PI/2 });
+                    
+                    const scene = viewer.createScene({
+                        source: source,
+                        geometry: geometry,
+                        view: view
+                    });
+
+                    // Добавляем хотспоты для героев
+                    room.heroes.forEach((heroIdx, i) => {
+                        const yaw = -0.5 + (i * 0.5);
+                        const el = document.createElement('div');
+                        el.className = 'hotspot';
+                        el.innerHTML = '👤';
+                        el.onclick = () => showHero(heroIdx);
+                        scene.hotspotContainer().createHotspot(el, { yaw: yaw, pitch: 0 });
+                    });
+
+                    // Навигационные стрелки
+                    if (idx > 0) {
+                        const left = document.createElement('div');
+                        left.className = 'nav-arrow';
+                        left.innerHTML = '←';
+                        left.onclick = () => goToRoom(idx - 1);
+                        scene.hotspotContainer().createHotspot(left, { yaw: -Math.PI/2, pitch: 0 });
                     }
+                    
+                    if (idx < roomData.length - 1) {
+                        const right = document.createElement('div');
+                        right.className = 'nav-arrow';
+                        right.innerHTML = '→';
+                        right.onclick = () => goToRoom(idx + 1);
+                        scene.hotspotContainer().createHotspot(right, { yaw: Math.PI/2, pitch: 0 });
+                    }
+
+                    scenes.push(scene);
                 });
-                
-                // Показываем первый зал
-                if (scenes.length > 0) {
-                    switchRoom(0);
-                }
+
+                document.getElementById('loading').style.display = 'none';
+                goToRoom(0);
+
             } catch (e) {
-                console.error('Initialization error:', e);
-                alert('Ошибка загрузки 3D тура. Попробуйте обновить страницу.');
+                console.error('Error:', e);
+                document.getElementById('loading').innerHTML = '<p style="color: #ff6b6b;">Ошибка загрузки. Попробуйте обновить страницу.</p>';
             }
         }
 
-        // Переключение зала
-        function switchRoom(index) {
-            if (index < 0 || index >= scenes.length) return;
-            currentRoom = index;
-            scenes[index].switchTo();
-            document.getElementById('currentRoomName').textContent = rooms[index].name;
+        function goToRoom(idx) {
+            if (idx < 0 || idx >= scenes.length) return;
+            currentRoom = idx;
+            scenes[idx].switchTo();
+            document.getElementById('roomName').textContent = roomData[idx].name;
             
             document.querySelectorAll('.room-btn').forEach((btn, i) => {
-                btn.classList.toggle('active', i === index);
+                btn.classList.toggle('active', i === idx);
             });
         }
 
-        // Показать информацию о герое
-        function showHeroInfo(heroId) {
-            const hero = heroes[heroId];
-            if (!hero) return;
-            
-            document.getElementById('modalImg').src = hero.photo;
-            document.getElementById('modalName').textContent = hero.name;
-            document.getElementById('modalDates').textContent = hero.dates;
-            document.getElementById('modalRank').textContent = hero.rank;
-            document.getElementById('modalDeed').textContent = hero.deed;
-            document.getElementById('photoModal').classList.add('active');
+        function showHero(idx) {
+            const h = heroes[idx];
+            document.getElementById('hName').textContent = h.name;
+            document.getElementById('hDates').textContent = h.dates;
+            document.getElementById('hRank').textContent = h.rank;
+            document.getElementById('hDeed').textContent = h.deed;
+            document.getElementById('heroModal').classList.add('active');
         }
 
-        function closePhotoModal() {
-            document.getElementById('photoModal').classList.remove('active');
+        function closeHero() {
+            document.getElementById('heroModal').classList.remove('active');
         }
 
         function startTour() {
             document.getElementById('instructions').classList.add('hidden');
         }
 
-        // Закрытие модалки при клике вне
-        document.getElementById('photoModal').addEventListener('click', function(e) {
-            if (e.target === this) closePhotoModal();
+        // Закрытие по клику вне модалки
+        document.getElementById('heroModal').addEventListener('click', function(e) {
+            if (e.target === this) closeHero();
         });
 
-        // Инициализация при загрузке
-        window.onload = init;
+        // Запуск после загрузки страницы
+        window.addEventListener('load', init);
     </script>
 </body>
 </html>
